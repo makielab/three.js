@@ -6,6 +6,13 @@
 </head>
 <body style="margin: 0;">
 
+  <!-- example converter usage:
+
+    cd utils/converters/fbx/
+    python convert_to_threejs.py conebox.fbx  ../../../examples/output.js -g
+
+    -->
+
   <script src="../build/three.js"></script>
   <script src="js/renderers/SoftwareRenderer.js"></script>
   <script src="js/renderers/SVGRenderer.js"></script>
@@ -85,7 +92,10 @@
 
           var t = ( 1.0 + Math.sin( 4 * time ) ) * 0.5;
 
-          var morphIndex = 6;
+          var morphIndex = 0;
+          if(mesh.morphTargetInfluences.length >= 5)
+            morphIndex = 6;
+
           if(true)
           {
               mesh.morphTargetInfluences[morphIndex] = t;

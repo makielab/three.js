@@ -843,7 +843,11 @@ def generate_mesh_string_for_non_scene_output(scene):
     mesh_list = generate_mesh_list(scene)
 
     #test - just one mesh
-    root_mesh = mesh_list[1]
+    if len(mesh_list) > 1:
+        root_mesh = mesh_list[1]
+    else:
+        root_mesh = mesh_list[0]
+
     mesh_list = [ root_mesh ]
 
 
