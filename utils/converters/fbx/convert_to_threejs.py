@@ -50,7 +50,7 @@ def PaddingString(n):
     for i in range(n):
         output += "\t"
     return output
-        
+
 def BoolString(value):
     if value:
         return "true"
@@ -59,14 +59,14 @@ def BoolString(value):
 # #####################################################
 # Helpers
 # #####################################################
-def getObjectName(o, force_prefix = False): 
+def getObjectName(o, force_prefix = False):
     if not o:
-        return ""  
+        return ""
     prefix = ""
     if option_prefix or force_prefix:
         prefix = "Object_%s_" % o.GetUniqueID()
     return prefix + o.GetName()
-      
+
 def getGeometryName(g, force_prefix = False):
     prefix = ""
     if option_prefix or force_prefix:
@@ -101,7 +101,7 @@ def getFogName(f, force_prefix = False):
 
 def getObjectVisible(n):
     return BoolString(True)
-    
+
 def getRadians(v):
     return ((v[0]*math.pi)/180, (v[1]*math.pi)/180, (v[2]*math.pi)/180)
 
@@ -119,13 +119,13 @@ def setBit(value, position, on):
 
 def convert_fbx_color(color):
     return [color.mRed, color.mGreen, color.mBlue, color.mAlpha]
-    
+
 def convert_fbx_vec2(v):
     return [v[0], v[1]]
 
 def convert_fbx_vec3(v):
     return [v[0], v[1], v[2]]
-    
+
 def generate_uvs(uv_layers):
     layers = []
     for uvs in uv_layers:
@@ -175,9 +175,9 @@ def generate_bounding_box(vertices):
 
     return [minx, miny, minz], [maxx, maxy, maxz]
 
-    
+
 # #####################################################
-# Generate - Triangles 
+# Generate - Triangles
 # #####################################################
 def triangulate_node_hierarchy(node):
     node_attribute = node.GetNodeAttribute();
@@ -188,7 +188,7 @@ def triangulate_node_hierarchy(node):
            node_attribute.GetAttributeType() == FbxNodeAttribute.eNurbsSurface or \
            node_attribute.GetAttributeType() == FbxNodeAttribute.ePatch:
             converter.TriangulateInPlace(node);
-        
+
         child_count = node.GetChildCount()
         for i in range(child_count):
             triangulate_node_hierarchy(node.GetChild(i))
@@ -200,16 +200,16 @@ def triangulate_scene(scene):
             triangulate_node_hierarchy(node.GetChild(i))
 
 # #####################################################
-# Generate - Material String 
+# Generate - Material String
 # #####################################################
 def generate_texture_bindings(material_property, texture_list):
     binding_types = {
-    "DiffuseColor": "map", "DiffuseFactor": "diffuseFactor", "EmissiveColor": "emissiveMap", 
-    "EmissiveFactor": "emissiveFactor", "AmbientColor": "ambientMap", "AmbientFactor": "ambientFactor", 
+    "DiffuseColor": "map", "DiffuseFactor": "diffuseFactor", "EmissiveColor": "emissiveMap",
+    "EmissiveFactor": "emissiveFactor", "AmbientColor": "ambientMap", "AmbientFactor": "ambientFactor",
     "SpecularColor": "specularMap", "SpecularFactor": "specularFactor", "ShininessExponent": "shininessExponent",
-    "NormalMap": "normalMap", "Bump": "bumpMap", "TransparentColor": "transparentMap", 
-    "TransparencyFactor": "transparentFactor", "ReflectionColor": "reflectionMap", 
-    "ReflectionFactor": "reflectionFactor", "DisplacementColor": "displacementMap", 
+    "NormalMap": "normalMap", "Bump": "bumpMap", "TransparentColor": "transparentMap",
+    "TransparencyFactor": "transparentFactor", "ReflectionColor": "reflectionMap",
+    "ReflectionFactor": "reflectionFactor", "DisplacementColor": "displacementMap",
     "VectorDisplacementColor": "vectorDisplacementMap"
     }
 
@@ -223,7 +223,7 @@ def generate_texture_bindings(material_property, texture_list):
                 for k in range(texture_count):
                     texture = layered_texture.GetSrcObject(FbxTexture.ClassId,k)
                     if texture:
-                        texture_id = getTextureName(texture, True) 
+                        texture_id = getTextureName(texture, True)
                         texture_binding = '		"%s": "%s",' % (binding_types[str(material_property.GetName())], texture_id)
                         texture_list.append(texture_binding)
         else:
@@ -232,7 +232,7 @@ def generate_texture_bindings(material_property, texture_list):
             for j in range(texture_count):
                 texture = material_property.GetSrcObject(FbxTexture.ClassId,j)
                 if texture:
-                    texture_id = getTextureName(texture, True) 
+                    texture_id = getTextureName(texture, True)
                     texture_binding = '		"%s": "%s",' % (binding_types[str(material_property.GetName())], texture_id)
                     texture_list.append(texture_binding)
 
@@ -250,7 +250,7 @@ def generate_material_string(material):
         # This material is a hardware shader, skip it
         print("Shader materials are not supported")
         return ''
-        
+
     elif material.GetClassId().Is(FbxSurfaceLambert.ClassId):
 
         ambient   = str(getHex(material.Ambient.Get()))
@@ -331,7 +331,7 @@ def generate_material_string(material):
     return generateMultiLineString( output, '\n\t\t', 0 )
 
 def generate_proxy_material_string(node, material_names):
-    
+
     output = [
 
     '\t' + LabelString( getMaterialName( node, True ) ) + ': {',
@@ -346,7 +346,7 @@ def generate_proxy_material_string(node, material_names):
     return generateMultiLineString( output, '\n\t\t', 0 )
 
 # #####################################################
-# Parse - Materials 
+# Parse - Materials
 # #####################################################
 def extract_materials_from_node(node, material_list):
     name = node.GetName()
@@ -357,7 +357,7 @@ def extract_materials_from_node(node, material_list):
         node = mesh.GetNode()
         if node:
             material_count = node.GetMaterialCount()
-    
+
     material_names = []
     for l in range(mesh.GetLayerCount()):
         materials = mesh.GetLayer(l).GetMaterials()
@@ -395,7 +395,7 @@ def generate_material_list(scene):
     return material_list
 
 # #####################################################
-# Generate - Texture String 
+# Generate - Texture String
 # #####################################################
 def generate_texture_string(texture):
 
@@ -420,7 +420,7 @@ def generate_texture_string(texture):
     return generateMultiLineString( output, '\n\t\t', 0 )
 
 # #####################################################
-# Parse - Textures 
+# Parse - Textures
 # #####################################################
 def extract_material_textures(material_property, texture_list):
     if material_property.IsValid():
@@ -447,14 +447,14 @@ def extract_material_textures(material_property, texture_list):
 def extract_textures_from_node(node, texture_list):
     name = node.GetName()
     mesh = node.GetNodeAttribute()
-    
+
     #for all materials attached to this mesh
     material_count = mesh.GetNode().GetSrcObjectCount(FbxSurfaceMaterial.ClassId)
     for material_index in range(material_count):
         material = mesh.GetNode().GetSrcObject(FbxSurfaceMaterial.ClassId, material_index)
 
         #go through all the possible textures types
-        if material:            
+        if material:
             texture_count = FbxLayerElement.sTypeTextureCount()
             for texture_index in range(texture_count):
                 material_property = material.FindProperty(FbxLayerElement.sTextureChannelNames(texture_index))
@@ -507,6 +507,34 @@ def extract_fbx_vertex_positions(mesh):
 
     return positions
 
+
+def extract_raw_fbx_vertex_positions(mesh):
+    control_points_count = mesh.GetControlPointsCount()
+    control_points = mesh.GetControlPoints()
+
+    positions = []
+    for i in range(control_points_count):
+        positions.append(control_points[i])
+
+    return positions
+
+def apply_fbx_node_transforms(positions, mesh):
+
+    node = mesh.GetNode()
+    if node and option_geometry:
+        # FbxMeshes are local to their node, we need the vertices in global space
+        # when scene nodes are not exported
+        transform = node.EvaluateGlobalTransform()
+        transform = FbxMatrix(transform)
+
+        for i in range(len(positions)):
+            v = positions[i]
+            position = FbxVector4(v[0], v[1], v[2])
+            position = transform.MultNormalize(position)
+            positions[i] = position
+
+    return positions
+
 def extract_fbx_vertex_normals(mesh):
 #   eNone             The mapping is undetermined.
 #   eByControlPoint   There will be one mapping coordinate for each surface control point/vertex.
@@ -519,16 +547,16 @@ def extract_fbx_vertex_normals(mesh):
     layered_normal_values = []
 
     poly_count = mesh.GetPolygonCount()
-    control_points = mesh.GetControlPoints() 
+    control_points = mesh.GetControlPoints()
 
     for l in range(mesh.GetLayerCount()):
         mesh_normals = mesh.GetLayer(l).GetNormals()
         if not mesh_normals:
             continue
-          
+
         normals_array = mesh_normals.GetDirectArray()
         normals_count = normals_array.GetCount()
-  
+
         if normals_count == 0:
             continue
 
@@ -577,7 +605,7 @@ def extract_fbx_vertex_normals(mesh):
                         poly_normals.append(index)
                 elif mesh_normals.GetMappingMode() == FbxLayerElement.eByPolygon or \
                      mesh_normals.GetMappingMode() ==  FbxLayerElement.eAllSame or \
-                     mesh_normals.GetMappingMode() ==  FbxLayerElement.eNone:       
+                     mesh_normals.GetMappingMode() ==  FbxLayerElement.eNone:
                     print("unsupported normal mapping mode for polygon vertex")
 
                 vertexId += 1
@@ -608,16 +636,16 @@ def extract_fbx_vertex_colors(mesh):
     layered_color_values = []
 
     poly_count = mesh.GetPolygonCount()
-    control_points = mesh.GetControlPoints() 
+    control_points = mesh.GetControlPoints()
 
     for l in range(mesh.GetLayerCount()):
         mesh_colors = mesh.GetLayer(l).GetVertexColors()
         if not mesh_colors:
             continue
-          
+
         colors_array = mesh_colors.GetDirectArray()
         colors_count = colors_array.GetCount()
-  
+
         if colors_count == 0:
             continue
 
@@ -652,7 +680,7 @@ def extract_fbx_vertex_colors(mesh):
                         poly_colors.append(index)
                 elif mesh_colors.GetMappingMode() == FbxLayerElement.eByPolygon or \
                      mesh_colors.GetMappingMode() ==  FbxLayerElement.eAllSame or \
-                     mesh_colors.GetMappingMode() ==  FbxLayerElement.eNone:       
+                     mesh_colors.GetMappingMode() ==  FbxLayerElement.eNone:
                     print("unsupported color mapping mode for polygon vertex")
 
                 vertexId += 1
@@ -680,16 +708,16 @@ def extract_fbx_vertex_uvs(mesh):
     layered_uv_values = []
 
     poly_count = mesh.GetPolygonCount()
-    control_points = mesh.GetControlPoints() 
+    control_points = mesh.GetControlPoints()
 
     for l in range(mesh.GetLayerCount()):
         mesh_uvs = mesh.GetLayer(l).GetUVs()
         if not mesh_uvs:
             continue
-          
+
         uvs_array = mesh_uvs.GetDirectArray()
         uvs_count = uvs_array.GetCount()
-  
+
         if uvs_count == 0:
             continue
 
@@ -723,7 +751,7 @@ def extract_fbx_vertex_uvs(mesh):
                         poly_uvs.append(uv_texture_index)
                 elif mesh_uvs.GetMappingMode() == FbxLayerElement.eByPolygon or \
                      mesh_uvs.GetMappingMode() ==  FbxLayerElement.eAllSame or \
-                     mesh_uvs.GetMappingMode() ==  FbxLayerElement.eNone:       
+                     mesh_uvs.GetMappingMode() ==  FbxLayerElement.eNone:
                     print("unsupported uv mapping mode for polygon vertex")
 
                 vertexId += 1
@@ -735,9 +763,10 @@ def extract_fbx_vertex_uvs(mesh):
     return layered_uv_values, layered_uv_indices
 
 # #####################################################
-# Generate - Mesh String (for scene output) 
+# Generate - Mesh String (for scene output)
 # #####################################################
 def generate_mesh_string_for_scene_output(node):
+
     mesh = node.GetNodeAttribute()
     mesh_list = [ mesh ]
 
@@ -747,16 +776,16 @@ def generate_mesh_string_for_scene_output(node):
     normals_to_indices = generate_unique_normals_dictionary(mesh_list)
     colors_to_indices = generate_unique_colors_dictionary(mesh_list)
     uvs_to_indices_list = generate_unique_uvs_dictionary_layers(mesh_list)
-    
+
     normal_values = generate_normals_from_dictionary(normals_to_indices)
     color_values = generate_colors_from_dictionary(colors_to_indices)
     uv_values = generate_uvs_from_dictionary_layers(uvs_to_indices_list)
 
-    faces = process_mesh_polygons(mesh_list, 
-                normals_to_indices, 
-                colors_to_indices, 
-                uvs_to_indices_list, 
-                vertex_offsets, 
+    faces = process_mesh_polygons(mesh_list,
+                normals_to_indices,
+                colors_to_indices,
+                uvs_to_indices_list,
+                vertex_offsets,
                 material_offsets)
 
     nuvs = []
@@ -768,7 +797,7 @@ def generate_mesh_string_for_scene_output(node):
     ncolors = len(color_values)
     nfaces = len(faces)
     nuvs = ",".join(nuvs)
-    
+
     aabb_min, aabb_max = generate_bounding_box(vertices)
     aabb_min = ",".join(str(f) for f in aabb_min)
     aabb_max = ",".join(str(f) for f in aabb_max)
@@ -790,27 +819,33 @@ def generate_mesh_string_for_scene_output(node):
     '		"uvs" : ' + ArrayString(nuvs),
     '	},',
     '	"boundingBox"  : {',
-    '		"min" : ' + ArrayString(aabb_min) + ',',   
-    '		"max" : ' + ArrayString(aabb_max),   
+    '		"min" : ' + ArrayString(aabb_min) + ',',
+    '		"max" : ' + ArrayString(aabb_max),
     '	},',
-    '	"scale" : ' + str( 1 ) + ',',   
-    '	"materials" : ' + ArrayString("") + ',',   
-    '	"vertices" : ' + ArrayString(vertices) + ',',   
-    '	"normals" : ' + ArrayString(normals) + ',',   
-    '	"colors" : ' + ArrayString(colors) + ',',   
-    '	"uvs" : ' + ArrayString(uvs) + ',',   
+    '	"scale" : ' + str( 1 ) + ',',
+    '	"materials" : ' + ArrayString("") + ',',
+    '	"vertices" : ' + ArrayString(vertices) + ',',
+    '	"normals" : ' + ArrayString(normals) + ',',
+    '	"colors" : ' + ArrayString(colors) + ',',
+    '	"uvs" : ' + ArrayString(uvs) + ',',
     '	"faces" : ' + ArrayString(faces),
     '}'
 
     ]
-    
+
     return generateMultiLineString( output, '\n\t\t', 0 )
 
 # #####################################################
-# Generate - Mesh String (for non-scene output) 
+# Generate - Mesh String (for non-scene output)
 # #####################################################
 def generate_mesh_string_for_non_scene_output(scene):
+
     mesh_list = generate_mesh_list(scene)
+
+    #test - just one mesh
+    root_mesh = mesh_list[1]
+    mesh_list = [ root_mesh ]
+
 
     vertices, vertex_offsets = process_mesh_vertices(mesh_list)
     materials, material_offsets = process_mesh_materials(mesh_list)
@@ -818,16 +853,16 @@ def generate_mesh_string_for_non_scene_output(scene):
     normals_to_indices = generate_unique_normals_dictionary(mesh_list)
     colors_to_indices = generate_unique_colors_dictionary(mesh_list)
     uvs_to_indices_list = generate_unique_uvs_dictionary_layers(mesh_list)
-    
+
     normal_values = generate_normals_from_dictionary(normals_to_indices)
     color_values = generate_colors_from_dictionary(colors_to_indices)
     uv_values = generate_uvs_from_dictionary_layers(uvs_to_indices_list)
 
-    faces = process_mesh_polygons(mesh_list, 
-                normals_to_indices, 
-                colors_to_indices, 
-                uvs_to_indices_list, 
-                vertex_offsets, 
+    faces = process_mesh_polygons(mesh_list,
+                normals_to_indices,
+                colors_to_indices,
+                uvs_to_indices_list,
+                vertex_offsets,
                 material_offsets)
 
     nuvs = []
@@ -839,6 +874,116 @@ def generate_mesh_string_for_non_scene_output(scene):
     ncolors = len(color_values)
     nfaces = len(faces)
     nuvs = ",".join(nuvs)
+
+# here for -g option
+    morphTargets = ""
+
+    # todo - handle multiple meshes?
+    mesh = root_mesh
+    print("name = %s" % mesh.GetName())
+    print("point count = %s" % mesh.GetControlPointsCount())
+    print("deformer count = %s" % mesh.GetDeformerCount())
+    print("nvertices = %s" % nvertices)
+    print("mesh list = %s" % mesh_list)
+
+    for lBlendShapeIndex in range(0, mesh.GetDeformerCount()):
+        lBlendShape = mesh.GetDeformer(lBlendShapeIndex, FbxDeformer.eBlendShape)
+
+        if lBlendShape is None:
+            print("blend shape = %s is None" % lBlendShapeIndex)
+        else:
+            lBlendShapeChannelCount = lBlendShape.GetBlendShapeChannelCount()
+            print("blend shape = %s = %s, channel count = %s" % (lBlendShapeIndex, lBlendShape, lBlendShapeChannelCount))
+
+            for lChannelIndex in range(0, lBlendShapeChannelCount):
+                lChannel = lBlendShape.GetBlendShapeChannel(lChannelIndex)
+                if lChannel is not None:
+                    lShapeCount = lChannel.GetTargetShapeCount()
+                    lFullWeights = lChannel.GetTargetShapeFullWeights();
+
+                    # todo - what if none?
+
+                    lTargetShape = lChannel.GetTargetShape(0)
+                    base_mesh = extract_raw_fbx_vertex_positions(mesh)
+                    morphed_vertices = extract_raw_fbx_vertex_positions(lTargetShape)
+
+#                    print(" -> chanel = %s, name = %s, target shape count = %s" % (lChannelIndex, lChannel.GetName(), lShapeCount))
+#                    print(" -> weights = %s" % lFullWeights)
+#                    print(" -> point counts mesh = %s, morphed = %s" % (lTargetShape.GetControlPointsCount(), mesh.GetControlPointsCount()))
+#                    print(" -> base_mesh = %s, morphed_vertices = %s" % (len(base_mesh), len(morphed_vertices)))
+#                    print("")
+
+
+#                    lWeight = 100
+#                    lStartIndex = -1
+#                    lEndIndex = -1
+#                    for lShapeIndex in range(0, lShapeCount):
+#                        if lWeight > 0 and lWeight <= lFullWeights[0]:
+#                            lEndIndex = 0;
+#                            break
+#                        if lWeight > lFullWeights[lShapeIndex] and lWeight < lFullWeights[lShapeIndex+1]:
+#                            lStartIndex = lShapeIndex;
+#                            lEndIndex = lShapeIndex + 1;
+#                            break
+#
+#                    print(" -> lStartIndex = %s, lEndIndex = %s" % (lStartIndex, lEndIndex))
+#                    lStartShape = None
+#                    lEndShape = None
+#                    if lStartIndex > -1:
+#                        lStartShape = lChannel.GetTargetShape(lStartIndex);
+#                    if lEndIndex > -1:
+#                        lEndShape = lChannel.GetTargetShape(lEndIndex);
+#                    print(" -> lStartShape = %s, lEndShape = %s" % (lStartShape, lEndShape))
+#
+#                    morphed_vertices = []
+#
+#                    # The weight percentage falls between base geometry and the first target shape.
+#                    if lStartIndex == -1 and lEndShape is not None:
+#                        lEndWeight = lFullWeights[0]
+#                        # Calculate the real weight.
+#                        lWeight = (lWeight/lEndWeight) * 100
+#
+#                        # Initialize the lDstVertexArray with vertex of base geometry.
+#                        morphed_vertices = extract_raw_fbx_vertex_positions(mesh)
+#                        for j in range(0, nvertices):
+#                            # Add the influence of the shape vertex to the mesh vertex.
+#                            if j < lEndShape.GetControlPointsCount():
+#                                lInfluence = (lEndShape.GetControlPoints()[j] - mesh.GetControlPoints()[j]) * lWeight * 0.01
+#                                morphed_vertices[j] += lInfluence
+#
+#                    #The weight percentage falls between two target shapes.
+#                    elif lStartShape is not None and lEndShape is not None:
+#                        lStartWeight = lFullWeights[lStartIndex]
+#                        lEndWeight = lFullWeights[lEndIndex]
+#                        # Calculate the real weight.
+#                        lWeight = ((lWeight-lStartWeight)/(lEndWeight-lStartWeight)) * 100;
+#
+#                        morphed_vertices = extract_raw_fbx_vertex_positions(lStartShape)
+#                        for j in range(0, nvertices):
+#                            # Add the influence of the shape vertex to the previous shape vertex.
+#                            if j < lEndShape.GetControlPointsCount():
+#                                lInfluence = (lEndShape.GetControlPoints()[j] - lStartShape.GetControlPoints()[j]) * lWeight * 0.01;
+#                                morphed_vertices[j] += lInfluence;
+#                            else:
+#                                print "ERROROROROR"
+#
+#                    print(" -> point count = %s, num verts = %s" % (lChannel.GetTargetShape(0).GetControlPointsCount(), len(morphed_vertices)))
+#
+#                    print("")
+
+                    # Do the node transform
+                    morphed_vertices = apply_fbx_node_transforms(morphed_vertices, mesh)
+
+                    morphed_vertices = ",".join(Vector3String(v, True) for v in morphed_vertices)
+                    morphTargets += '{ "name": "' + lChannel.GetName() + '", "vertices": ' + ArrayString(morphed_vertices) + ' }'
+
+                    # temp just one
+                    dbg_just_one = False
+                    if dbg_just_one:
+                        break
+                    else:
+                        if lChannelIndex != (lBlendShapeChannelCount - 1):
+                            morphTargets += ', '
 
     aabb_min, aabb_max = generate_bounding_box(vertices)
     aabb_min = ",".join(str(f) for f in aabb_min)
@@ -861,19 +1006,21 @@ def generate_mesh_string_for_non_scene_output(scene):
     '		"normals" : ' + str(nnormals) + ',',
     '		"colors" : ' + str(ncolors) + ',',
     '		"faces" : ' + str(nfaces) + ',',
-    '		"uvs" : ' + ArrayString(nuvs),
+    '		"uvs" : ' + ArrayString(nuvs) + ',',
+    '       "morphTargets" : 1',                            # todo test
     '	},',
     '	"boundingBox"  : {',
-    '		"min" : ' + ArrayString(aabb_min) + ',',   
-    '		"max" : ' + ArrayString(aabb_max),   
+    '		"min" : ' + ArrayString(aabb_min) + ',',
+    '		"max" : ' + ArrayString(aabb_max),
     '	},',
-    '	"scale" : ' + str( 1 ) + ',',   
-    '	"materials" : ' + ArrayString("") + ',',   
-    '	"vertices" : ' + ArrayString(vertices) + ',',   
-    '	"normals" : ' + ArrayString(normals) + ',',   
-    '	"colors" : ' + ArrayString(colors) + ',',   
-    '	"uvs" : ' + ArrayString(uvs) + ',',   
-    '	"faces" : ' + ArrayString(faces),
+    '	"scale" : ' + str( 1 ) + ',',
+    '	"materials" : ' + ArrayString("") + ',',
+    '	"vertices" : ' + ArrayString(vertices) + ',',
+    '	"normals" : ' + ArrayString(normals) + ',',
+    '	"colors" : ' + ArrayString(colors) + ',',
+    '	"uvs" : ' + ArrayString(uvs) + ',',
+    '	"faces" : ' + ArrayString(faces) + ',',
+    '   "morphTargets" : ' + ArrayString(morphTargets),
     '}'
 
     ]
@@ -891,7 +1038,7 @@ def generate_color_key(color):
 
 def generate_uv_key(uv):
     return (round(uv[0], 6), round(uv[1], 6))
-                
+
 def append_non_duplicate_uvs(source_uvs, dest_uvs, counts):
     source_layer_count = len(source_uvs)
     for layer_index in range(source_layer_count):
@@ -910,7 +1057,7 @@ def append_non_duplicate_uvs(source_uvs, dest_uvs, counts):
         source_uv_layer = source_uvs[layer_index]
 
         for uv in source_uv_layer:
-            key = generate_uv_key(uv) 
+            key = generate_uv_key(uv)
             if key not in dest_uv_layer:
                 dest_uv_layer[key] = count
                 count += 1
@@ -922,7 +1069,7 @@ def append_non_duplicate_uvs(source_uvs, dest_uvs, counts):
 def generate_unique_normals_dictionary(mesh_list):
     normals_dictionary = {}
     nnormals = 0
-      
+
     # Merge meshes, remove duplicate data
     for mesh in mesh_list:
         node = mesh.GetNode()
@@ -930,7 +1077,7 @@ def generate_unique_normals_dictionary(mesh_list):
 
         if len(normal_values) > 0:
             for normal in normal_values:
-                key = generate_normal_key(normal) 
+                key = generate_normal_key(normal)
                 if key not in normals_dictionary:
                     normals_dictionary[key] = nnormals
                     nnormals += 1
@@ -940,14 +1087,14 @@ def generate_unique_normals_dictionary(mesh_list):
 def generate_unique_colors_dictionary(mesh_list):
     colors_dictionary = {}
     ncolors = 0
-      
+
     # Merge meshes, remove duplicate data
     for mesh in mesh_list:
         color_values, color_indices = extract_fbx_vertex_colors(mesh)
 
         if len(color_values) > 0:
             for color in color_values:
-                key = generate_color_key(color) 
+                key = generate_color_key(color)
                 if key not in colors_dictionary:
                     colors_dictionary[key] = count
                     count += 1
@@ -984,7 +1131,7 @@ def generate_colors_from_dictionary(colors_dictionary):
 def generate_uvs_from_dictionary_layers(uvs_dictionary_layers):
     uv_values = []
     for uvs_dictionary in uvs_dictionary_layers:
-        uv_values_layer = []    
+        uv_values_layer = []
         for key, index in sorted(uvs_dictionary.items(), key = operator.itemgetter(1)):
             uv_values_layer.append(key)
         uv_values.append(uv_values_layer)
@@ -1055,7 +1202,7 @@ def process_mesh_vertices(mesh_list):
     for mesh in mesh_list:
         node = mesh.GetNode()
         mesh_vertices = extract_fbx_vertex_positions(mesh)
-                
+
         vertices.extend(mesh_vertices[:])
         vertex_offset += len(mesh_vertices)
         vertex_offset_list.append(vertex_offset)
@@ -1070,7 +1217,7 @@ def process_mesh_materials(mesh_list):
     #TODO: remove duplicate mesh references
     for mesh in mesh_list:
         node = mesh.GetNode()
-                
+
         material_count = node.GetMaterialCount()
         if material_count > 0:
             for l in range(mesh.GetLayerCount()):
@@ -1094,7 +1241,7 @@ def process_mesh_polygons(mesh_list, normals_to_indices, colors_to_indices, uvs_
     for mesh_index in range(len(mesh_list)):
         mesh = mesh_list[mesh_index]
         poly_count = mesh.GetPolygonCount()
-        control_points = mesh.GetControlPoints() 
+        control_points = mesh.GetControlPoints()
 
         normal_values, normal_indices = extract_fbx_vertex_normals(mesh)
         color_values, color_indices = extract_fbx_vertex_colors(mesh)
@@ -1112,7 +1259,7 @@ def process_mesh_polygons(mesh_list, normals_to_indices, colors_to_indices, uvs_
                 uv_indices = uv_indices_layers[l]
                 face_uv_indices = generate_uv_indices_for_poly(poly_index, uv_values, uv_indices, uvs_to_indices_list[l])
                 face_uv_layers.append(face_uv_indices)
-                
+
             face_vertices = []
             for vertex_index in range(poly_size):
                 control_point_index = mesh.GetPolygonVertex(poly_index, vertex_index)
@@ -1126,8 +1273,8 @@ def process_mesh_polygons(mesh_list, normals_to_indices, colors_to_indices, uvs_
 
             vertex_offset = vertex_offset_list[mesh_index]
 
-            face = generate_mesh_face(mesh, 
-                      poly_index, 
+            face = generate_mesh_face(mesh,
+                      poly_index,
                       face_vertices,
                       face_normals,
                       face_colors,
@@ -1150,12 +1297,12 @@ def generate_mesh_face(mesh, polygon_index, vertex_indices, normals, colors, uv_
         if materials:
             hasMaterial = True
             break
-                
+
     hasFaceUvs = False
     hasFaceVertexUvs = len(uv_layers) > 0
-    hasFaceNormals = False 
+    hasFaceNormals = False
     hasFaceVertexNormals = len(normals) > 0
-    hasFaceColors = False 
+    hasFaceColors = False
     hasFaceVertexColors = len(colors) > 0
 
     faceType = 0
@@ -1214,11 +1361,11 @@ def generate_mesh_face(mesh, polygon_index, vertex_indices, normals, colors, uv_
             index = colors[i]
             faceData.append(index)
 
-    return ",".join( map(str, faceData) ) 
+    return ",".join( map(str, faceData) )
 
 
 # #####################################################
-# Generate - Mesh List 
+# Generate - Mesh List
 # #####################################################
 def generate_mesh_list_from_hierarchy(node, mesh_list):
     if node.GetNodeAttribute() == None:
@@ -1247,7 +1394,7 @@ def generate_mesh_list(scene):
     return mesh_list
 
 # #####################################################
-# Generate - Embeds 
+# Generate - Embeds
 # #####################################################
 def generate_embed_list_from_hierarchy(node, embed_list):
     if node.GetNodeAttribute() == None:
@@ -1277,7 +1424,7 @@ def generate_embed_list(scene):
     return embed_list
 
 # #####################################################
-# Generate - Geometries 
+# Generate - Geometries
 # #####################################################
 def generate_geometry_string(node):
 
@@ -1318,7 +1465,7 @@ def generate_camera_name_list_from_hierarchy(node, camera_list):
     else:
         attribute_type = (node.GetNodeAttribute().GetAttributeType())
         if attribute_type == FbxNodeAttribute.eCamera:
-            camera_string = getObjectName(node) 
+            camera_string = getObjectName(node)
             camera_list.append(camera_string)
     for i in range(node.GetChildCount()):
         generate_camera_name_list_from_hierarchy(node.GetChild(i), camera_list)
@@ -1332,7 +1479,7 @@ def generate_camera_name_list(scene):
     return camera_list
 
 # #####################################################
-# Generate - Light Object 
+# Generate - Light Object
 # #####################################################
 def generate_default_light_string(padding):
     direction = (1,1,1)
@@ -1366,9 +1513,9 @@ def generate_light_string(node, padding):
     if light_type == "directional":
 
         # Three.js directional lights emit light from a point in 3d space to a target node or the origin.
-        # When there is no target, we need to take a point, one unit away from the origin, and move it 
+        # When there is no target, we need to take a point, one unit away from the origin, and move it
         # into the right location so that the origin acts like the target
-        
+
         if node.GetTarget():
             direction = position
         else:
@@ -1376,7 +1523,7 @@ def generate_light_string(node, padding):
             scale = FbxVector4(1,1,1,1)
             rotation = transform.GetR()
             matrix = FbxMatrix(translation, rotation, scale)
-            direction = matrix.MultNormalize(global_up_vector) 
+            direction = matrix.MultNormalize(global_up_vector)
 
         output = [
 
@@ -1444,9 +1591,9 @@ def generate_ambient_light_string(scene):
     ]
 
     return generateMultiLineString( output, '\n\t\t', 0 )
-    
+
 # #####################################################
-# Generate - Camera Object 
+# Generate - Camera Object
 # #####################################################
 def generate_default_camera_string(padding):
     position = (100, 100, 100)
@@ -1461,7 +1608,7 @@ def generate_default_camera_string(padding):
     '	"fov"      : ' + str(fov) + ',',
     '	"near"     : ' + str(near) + ',',
     '	"far"      : ' + str(far) + ',',
-    '	"position" : ' + Vector3String( position ), 
+    '	"position" : ' + Vector3String( position ),
     ' }'
 
     ]
@@ -1480,7 +1627,7 @@ def generate_camera_string(node, padding):
         target = camera.InterestPosition.Get()
 
     position = camera.Position.Get()
-  
+
     projection_types = [ "perspective", "orthogonal" ]
     projection = projection_types[camera.ProjectionType.Get()]
 
@@ -1530,7 +1677,7 @@ def generate_camera_string(node, padding):
     return generateMultiLineString( output, '\n\t\t', padding )
 
 # #####################################################
-# Generate - Mesh Object 
+# Generate - Mesh Object
 # #####################################################
 def generate_mesh_object_string(node, padding):
     mesh = node.GetNodeAttribute()
@@ -1554,7 +1701,7 @@ def generate_mesh_object_string(node, padding):
                     material = node.GetMaterial(i)
                     material_names.append( getMaterialName(material) )
         #If this mesh has more than one material, use a proxy material
-        material_name = getMaterialName( node, True) if material_count > 1 else material_names[0] 
+        material_name = getMaterialName( node, True) if material_count > 1 else material_names[0]
 
     output = [
 
@@ -1571,11 +1718,11 @@ def generate_mesh_object_string(node, padding):
     return generateMultiLineString( output, '\n\t\t', padding )
 
 # #####################################################
-# Generate - Object 
+# Generate - Object
 # #####################################################
 def generate_object_string(node, padding):
-    node_types = ["Unknown", "Null", "Marker", "Skeleton", "Mesh", "Nurbs", "Patch", "Camera", 
-    "CameraStereo", "CameraSwitcher", "Light", "OpticalReference", "OpticalMarker", "NurbsCurve", 
+    node_types = ["Unknown", "Null", "Marker", "Skeleton", "Mesh", "Nurbs", "Patch", "Camera",
+    "CameraStereo", "CameraSwitcher", "Light", "OpticalReference", "OpticalMarker", "NurbsCurve",
     "TrimNurbsSurface", "Boundary", "NurbsSurface", "Shape", "LODGroup", "SubDiv", "CachedEffect", "Line"]
 
     transform = node.EvaluateLocalTransform()
@@ -1603,7 +1750,7 @@ def generate_object_string(node, padding):
     return generateMultiLineString( output, '\n\t\t', padding )
 
 # #####################################################
-# Parse - Objects 
+# Parse - Objects
 # #####################################################
 def generate_object_hierarchy(node, object_list, pad, siblings_left):
     object_count = 0
@@ -1674,7 +1821,7 @@ def generate_scene_objects_string(scene):
     return "\n".join(object_list), object_count
 
 # #####################################################
-# Parse - Geometry (non-scene output) 
+# Parse - Geometry (non-scene output)
 # #####################################################
 def extract_geometry(scene, filename):
     mesh_string = generate_mesh_string_for_non_scene_output(scene)
@@ -1710,7 +1857,7 @@ def extract_scene(scene, filename):
     bgalpha = 1
 
     # This does not seem to be any help here
-    # global_settings.GetDefaultCamera() 
+    # global_settings.GetDefaultCamera()
 
     defcamera = LabelString(camera_names[0] if len(camera_names) > 0 else "")
     if option_default_camera:
@@ -1824,11 +1971,11 @@ if __name__ == "__main__":
         elif platform.system() == 'Linux':
             msg += '"/usr/local/lib/python2.6/site-packages"'
         elif platform.system() == 'Darwin':
-            msg += '"/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/site-packages"'        
+            msg += '"/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/site-packages"'
         msg += ' folder.'
-        print(msg) 
+        print(msg)
         sys.exit(1)
-    
+
     usage = "Usage: %prog [source_file.fbx] [output_file.js] [options]"
     parser = OptionParser(usage=usage)
 
@@ -1841,12 +1988,12 @@ if __name__ == "__main__":
 
     (options, args) = parser.parse_args()
 
-    option_triangulate = options.triangulate 
+    option_triangulate = options.triangulate
     option_textures = True if not options.notextures else False
     option_prefix = options.prefix
-    option_geometry = options.geometry 
-    option_default_camera = options.defcamera 
-    option_default_light = options.deflight 
+    option_geometry = options.geometry
+    option_default_camera = options.defcamera
+    option_default_light = options.deflight
 
     # Prepare the FBX SDK.
     sdk_manager, scene = InitializeSdkObjects()
